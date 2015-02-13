@@ -17,6 +17,7 @@ ABlockGrid::ABlockGrid(const FObjectInitializer& ObjectInitializer)
 	//set defaults
 	BlockSpacing = 110.f;
 	Size = 5;
+	countBlocks = 0;
 }
 
 void ABlockGrid::BeginPlay()
@@ -46,6 +47,7 @@ void ABlockGrid::BeginPlay()
 		if (newBlock != NULL)
 		{
 			newBlock->OwningGrid = this;
+			countBlocks++;
 		}
 		
 		//create exit block

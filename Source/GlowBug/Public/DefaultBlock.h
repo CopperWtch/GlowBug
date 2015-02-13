@@ -36,4 +36,11 @@ public:
 	FORCEINLINE class USceneComponent* GetBaseCollisionComponent() const { return BaseCollisionComponent; }
 	/** Returns BlockMesh subobject **/
 	FORCEINLINE class UStaticMeshComponent* GetBlockMesh() const { return BlockMesh; }
+
+
+	//for collision
+	bool bIsColliding;
+	virtual void Tick(float DeltaSeconds) OVERRIDE;
+	void CheckCollision();
+
 };

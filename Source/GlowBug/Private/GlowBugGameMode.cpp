@@ -30,6 +30,8 @@ void AGlowBugGameMode::HandleNewState(EGlowBugPlayState NewState)
 		break;
 	case EGlowBugPlayState::EGameOver:
 		break;
+	case EGlowBugPlayState::EGameWon:
+		break;
 	case EGlowBugPlayState::EUnknown:
 	default:
 		//do nothing

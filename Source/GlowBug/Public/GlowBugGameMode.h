@@ -8,6 +8,7 @@ enum class EGlowBugPlayState : short
 {
 	EPlaying,
 	EGameOver,
+	EGameWon,
 	EUnknown
 };
 

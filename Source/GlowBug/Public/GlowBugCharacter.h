@@ -62,5 +62,13 @@ public:
 	//FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	//FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+	
+	//Array of Actors the Character is currently colliding with
+	TArray<AActor*> CollectedActors;
+
+	virtual void Tick(float DeltaSeconds) OVERRIDE;
+	void StepOff();
+	
+
 };
 

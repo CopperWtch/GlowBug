@@ -19,4 +19,7 @@ public:
 	UFUNCTION(BlueprintNativeEvent)
 	void OnSteppedOn();
 	
+	virtual void Tick(float DeltaSeconds) OVERRIDE;
+
+
 };

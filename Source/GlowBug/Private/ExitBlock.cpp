@@ -2,18 +2,53 @@
 
 #include "GlowBug.h"
 #include "ExitBlock.h"
+#include "Engine.h"
+#include "GlowBugGameMode.h"
+#include "BlockGrid.h"
+
+
 
 AExitBlock::AExitBlock(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
 	//replace material
 	static ConstructorHelpers::FObjectFinder<UMaterial> Material_Blue(TEXT("MaterialInstanceConstant'/Game/StarterContent/Materials/M_Rock_Sandstone.M_Rock_Sandstone'"));
 	BlockMesh->SetMaterial(0, Material_Blue.Object);
+
+
+
 }
 
 void AExitBlock::OnSteppedOn_Implementation()
 {
-	//TODO
-	//WIN
+	AGlowBugGameMode* gm = (AGlowBugGameMode*)GetWorld()->GetAuthGameMode();
+
+	//There is at least 1 Block remaining in the level. 
+	//The Player loses the game
+	if (OwningGrid->GetCountBlocks() > 0)
+	{
+		gm->SetCurrentState(EGlowBugPlayState::EGameOver);
+
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, "LOST!");
+	}
+	//There are no blocks left in the level except for the exit tile.
+	//The player wins
+	else{
+		gm->SetCurrentState(EGlowBugPlayState::EGameWon);
+
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, "Win!");
+	}
+
 }
 
+void AExitBlock::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+	//call in every update to check for collision
+	AGlowBugGameMode* gm = (AGlowBugGameMode*)GetWorld()->GetAuthGameMode();
 
+	if (bIsColliding&&gm->GetCurrentState()==EGlowBugPlayState::EPlaying)
+	{
+		OnSteppedOn_Implementation();
+	}
+		
+}

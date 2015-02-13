@@ -2,6 +2,7 @@
 
 #include "GlowBug.h"
 #include "GlowBugCharacter.h"
+#include "DefaultBlock.h"
 
 //////////////////////////////////////////////////////////////////////////
 // AGlowBugCharacter
@@ -49,8 +50,6 @@ void AGlowBugCharacter::SetupPlayerInputComponent(class UInputComponent* InputCo
 {
 	// Set up gameplay key bindings
 	check(InputComponent);
-	//InputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
-	//InputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
 	InputComponent->BindAxis("MoveForward", this, &AGlowBugCharacter::MoveForward);
 	InputComponent->BindAxis("MoveRight", this, &AGlowBugCharacter::MoveRight);
@@ -125,4 +124,35 @@ void AGlowBugCharacter::MoveRight(float Value)
 		// add movement in that direction
 		AddMovementInput(Direction, Value);
 	}
+}
+
+//Called constantly to check for collision
+void AGlowBugCharacter::StepOff()
+{
+
+
+	//Returns all the actors colliding with the character
+	CapsuleComponent->GetOverlappingActors(CollectedActors);
+
+	//iterate through them 
+	for (int32 i = 0; i < CollectedActors.Num(); i++)
+	{
+		//Cast the AActor Array to ADefaultBlock
+		ADefaultBlock* block = Cast<ADefaultBlock>(CollectedActors[i]);
+
+		//make sure the block is active & not destroyed already
+		if (block != NULL && !block->IsPendingKill() && block->bIsActive)
+		{
+			block->bIsColliding=true;
+		}
+	}
+
+}
+
+void AGlowBugCharacter::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	//call in every update to check for collision
+	StepOff();
 }

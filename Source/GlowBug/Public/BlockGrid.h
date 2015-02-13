@@ -17,6 +17,9 @@ class ABlockGrid : public AActor
 	/** Dummy root component */
 	UPROPERTY(Category = Grid, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class USceneComponent* DummyRoot;
+private:
+	//number of Blocks in the level
+	int32 countBlocks;
 	
 public:
 	ABlockGrid(const FObjectInitializer& ObjectInitializer);
@@ -33,7 +36,17 @@ public:
 	virtual void BeginPlay() override;
 	// End AActor interface
 
-
 	/** Returns DummyRoot subobject **/
 	FORCEINLINE class USceneComponent* GetDummyRoot() const { return DummyRoot; }
+
+	//returns number of blocks in the grid without the exit block
+	int32 GetCountBlocks()
+	{
+		return countBlocks;
+	}
+	//set number of blocks in the grid without the exit block
+	void SetCountBlocks(int32 count)
+	{
+		countBlocks = count;
+	}
 };
