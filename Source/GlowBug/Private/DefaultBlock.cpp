@@ -5,6 +5,7 @@
 #include "DefaultBlock.h"
 #include "Engine.h"
 #include "GlowBugCharacter.h"
+#include "GlowBugGameMode.h"
 
 //constructor
 ADefaultBlock::ADefaultBlock(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -14,6 +15,7 @@ ADefaultBlock::ADefaultBlock(const FObjectInitializer& ObjectInitializer) : Supe
 
 	//Create root scene component
 	BaseCollisionComponent = ObjectInitializer.CreateDefaultSubobject<USphereComponent>(this, TEXT("BaseSphereComponent"));
+	BaseCollisionComponent->SetSphereRadius(65);
 	RootComponent = BaseCollisionComponent;
 	
 
@@ -55,6 +57,30 @@ void ADefaultBlock::OnSteppedOff_Implementation()
 
 	//destroy the Block to remove it from the scene
 	Destroy();
+
+
+	if (GetBlockEast())
+	{
+		//GetBlockEast()->SetNeighbours();
+		GetBlockEast()->SetBlockWest(NULL);
+	}
+	if (GetBlockWest())
+	{
+		//GetBlockWest()->SetNeighbours();
+		GetBlockWest()->SetBlockEast(NULL);
+	}
+	if (GetBlockNorth())
+	{
+		//GetBlockNorth()->SetNeighbours();
+		GetBlockNorth()->SetBlockSouth(NULL);
+	}
+	if (GetBlockSouth())
+	{
+		//GetBlockSouth()->SetNeighbours();
+		GetBlockSouth()->SetBlockNorth(NULL);
+	}
+
+
 	//To Debug we print a log on the screen
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, "Tile Destroyed!");
 }
@@ -88,6 +114,97 @@ void ADefaultBlock::CheckCollision()
 void ADefaultBlock::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	//call in every update to check for collision
-	CheckCollision();
+
+	AGlowBugGameMode* gm = (AGlowBugGameMode*)GetWorld()->GetAuthGameMode();
+	if (gm->GetCurrentState() == EGlowBugPlayState::EPlaying && OwningGrid != NULL && OwningGrid->IsCompleted() == true)
+	{
+		//call in every update to check for collision
+		CheckCollision();
+
+		//Check for Isolation
+		if (CheckIsolation())
+		{
+			LoseGame();
+		}
+	}
+}
+
+void ADefaultBlock::SetNeighbours()
+{
+	//get all actors type DefaultBlock that collide
+	BaseCollisionComponent->GetOverlappingActors(CollectedBlocks, ADefaultBlock::StaticClass());
+
+	for (int32 i = 0; i < CollectedBlocks.Num(); i++)
+	{
+		//Cast to DefaultBlock
+		ADefaultBlock* tile = Cast<ADefaultBlock>(CollectedBlocks[i]);
+
+		if (tile != NULL && !tile->IsPendingKill() && tile->bIsActive && tile!=this)
+		{
+		
+		//Get positions to compare
+		FVector tilePos;//= CollectedTiles[i]->GetActorLocation();
+		FVector tileBounds;
+		tile->GetActorBounds(false, tilePos, tileBounds);
+
+		FVector thisPos; //= this->GetActorLocation();
+		FVector thisBounds;
+		this->GetActorBounds(false, thisPos, thisBounds);
+
+		//debug
+		//FString TheFloatStr = FString::SanitizeFloat(tilePos.X);
+		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, *TheFloatStr);
+
+		//set as neighbours depending on position compared to This
+
+		if (tilePos.X == thisPos.X)
+		{
+			if (tilePos.Y>thisPos.Y)
+				this->SetBlockEast(tile);
+			else
+				this->SetBlockWest(tile);
+
+		}
+		else if (tilePos.Y == thisPos.Y)
+		{
+			if (tilePos.X>thisPos.X)
+				this->SetBlockNorth(tile);
+			else
+				this->SetBlockSouth(tile);
+		}
+		}
+	}
+}
+
+bool ADefaultBlock::CheckIsolation()
+{
+	if (this->GetBlockSouth() == NULL && this->GetBlockNorth() == NULL && this->GetBlockEast() == NULL && this->GetBlockWest() == NULL && this->bIsActive && OwningGrid->IsCompleted()==true)
+	{
+		//tile has no neighbours
+		//ISolation: 
+
+		FString TheFloatStr = FString::SanitizeFloat(this->GetActorLocation().X);
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, *TheFloatStr);
+
+		return true;
+
+	}
+	else return false;
+
+}
+
+void ADefaultBlock::WinGame()
+{
+	AGlowBugGameMode* gm = (AGlowBugGameMode*)GetWorld()->GetAuthGameMode();
+	gm->SetCurrentState(EGlowBugPlayState::EGameWon);
+
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, "WIN!");
+}
+
+void ADefaultBlock::LoseGame()
+{
+	AGlowBugGameMode* gm = (AGlowBugGameMode*)GetWorld()->GetAuthGameMode();
+	gm->SetCurrentState(EGlowBugPlayState::EGameOver);
+
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, "LOST!");
 }

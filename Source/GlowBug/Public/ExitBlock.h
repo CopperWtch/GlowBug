@@ -21,5 +21,5 @@ public:
 	
 	virtual void Tick(float DeltaSeconds) OVERRIDE;
 
-
+	virtual bool CheckIsolation();
 };

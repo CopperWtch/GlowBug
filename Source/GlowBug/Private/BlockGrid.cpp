@@ -18,6 +18,7 @@ ABlockGrid::ABlockGrid(const FObjectInitializer& ObjectInitializer)
 	BlockSpacing = 110.f;
 	Size = 5;
 	countBlocks = 0;
+	SetIsCompleted(false);
 }
 
 void ABlockGrid::BeginPlay()
@@ -56,7 +57,7 @@ void ABlockGrid::BeginPlay()
 			FVector GroundOrigin;
 			FVector GroundExtends;
 			newBlock->GetActorBounds(false,GroundOrigin,GroundExtends);
-			FVector offset = FVector(GroundExtends.X*2.2f,0.0f,0.0f);
+			FVector offset = FVector(GroundExtends.X*2.f,0.0f,0.0f);
 			AExitBlock* exit = GetWorld()->SpawnActor<AExitBlock>(BlockLocation + offset, FRotator(0, 0, 0));
 			if (exit != NULL)
 			{
@@ -64,6 +65,15 @@ void ABlockGrid::BeginPlay()
 			}
 		}
 
-	}
+		
 
+
+	}
+	//set Grid as completed
+	SetIsCompleted(true);
+
+	for (TActorIterator<ADefaultBlock> BlockItr(GetWorld()); BlockItr; ++BlockItr)
+	{
+		BlockItr->SetNeighbours();
+	}
 }

@@ -15,7 +15,6 @@ AExitBlock::AExitBlock(const FObjectInitializer& ObjectInitializer) : Super(Obje
 	BlockMesh->SetMaterial(0, Material_Blue.Object);
 
 
-
 }
 
 void AExitBlock::OnSteppedOn_Implementation()
@@ -24,18 +23,14 @@ void AExitBlock::OnSteppedOn_Implementation()
 
 	//There is at least 1 Block remaining in the level. 
 	//The Player loses the game
-	if (OwningGrid->GetCountBlocks() > 0)
+	if (OwningGrid->GetCountBlocks() > 1)
 	{
-		gm->SetCurrentState(EGlowBugPlayState::EGameOver);
-
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, "LOST!");
+		this->LoseGame();
 	}
 	//There are no blocks left in the level except for the exit tile.
 	//The player wins
 	else{
-		gm->SetCurrentState(EGlowBugPlayState::EGameWon);
-
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, "Win!");
+		this->WinGame();
 	}
 
 }
@@ -51,4 +46,12 @@ void AExitBlock::Tick(float DeltaSeconds)
 		OnSteppedOn_Implementation();
 	}
 		
+}
+
+bool AExitBlock::CheckIsolation()
+{
+	//FString TheFloatStr = FString::SanitizeFloat(this->GetActorLocation().X);
+	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, "TOAST");
+	return false;
+
 }

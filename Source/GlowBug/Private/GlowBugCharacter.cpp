@@ -1,6 +1,7 @@
 // Copyright 1998-2014 Epic Games, Inc. All Rights Reserved.
 
 #include "GlowBug.h"
+#include "Engine.h"
 #include "GlowBugCharacter.h"
 #include "DefaultBlock.h"
 
@@ -129,8 +130,6 @@ void AGlowBugCharacter::MoveRight(float Value)
 //Called constantly to check for collision
 void AGlowBugCharacter::StepOff()
 {
-
-
 	//Returns all the actors colliding with the character
 	CapsuleComponent->GetOverlappingActors(CollectedActors);
 
@@ -143,6 +142,28 @@ void AGlowBugCharacter::StepOff()
 		//make sure the block is active & not destroyed already
 		if (block != NULL && !block->IsPendingKill() && block->bIsActive)
 		{
+			//if (block->GetBlockEast())
+			//{
+			//	FString TheFloatStr = FString::SanitizeFloat(block->GetBlockEast()->GetActorLocation().X);
+			//	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, *TheFloatStr);
+			//}
+			//if (block->GetBlockNorth())
+			//{
+			//	FString TheFloatStr = FString::SanitizeFloat(block->GetBlockNorth()->GetActorLocation().X);
+			//	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, *TheFloatStr);
+			//}
+			//if (block->GetBlockWest())
+			//{
+				//FString TheFloatStr = FString::SanitizeFloat(block->GetBlockWest()->GetActorLocation().X);
+				//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, *TheFloatStr);
+			//	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("x: %f, y: %f"), block->GetBlockWest()->GetActorLocation().X, block->GetBlockWest()->GetActorLocation().Y));
+			//}
+			//if (block->GetBlockSouth())
+			//{
+			//	FString TheFloatStr = FString::SanitizeFloat(block->GetBlockSouth()->GetActorLocation().X);
+			//	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, *TheFloatStr);
+			//}
+
 			block->bIsColliding=true;
 		}
 	}

@@ -20,6 +20,9 @@ class ABlockGrid : public AActor
 private:
 	//number of Blocks in the level
 	int32 countBlocks;
+	//every block in the grid is spawned
+	bool bIsCompleted;
+
 	
 public:
 	ABlockGrid(const FObjectInitializer& ObjectInitializer);
@@ -49,4 +52,8 @@ public:
 	{
 		countBlocks = count;
 	}
+
+	//get/Set bIsCompleted
+	bool IsCompleted(){ return bIsCompleted; }
+	void SetIsCompleted(bool state){ bIsCompleted = state; }
 };
