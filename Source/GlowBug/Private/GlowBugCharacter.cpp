@@ -114,6 +114,7 @@ void AGlowBugCharacter::MoveForward(float Value)
 
 void AGlowBugCharacter::MoveRight(float Value)
 {
+
 	if ( (Controller != NULL) && (Value != 0.0f) )
 	{
 		// find out which way is right
