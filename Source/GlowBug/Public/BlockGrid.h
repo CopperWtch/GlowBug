@@ -3,6 +3,7 @@
 #pragma once
 
 #include "GameFramework/Actor.h"
+#include "RandomWalker.h"
 #include "BlockGrid.generated.h"
 
 /**
@@ -22,7 +23,10 @@ private:
 	int32 countBlocks;
 	//every block in the grid is spawned
 	bool bIsCompleted;
-
+	//generates  locations for the blocks
+	RandomWalker* walker;
+	//keeps track of the locations
+	TArray<FVector> blockLocations;
 	
 public:
 	ABlockGrid(const FObjectInitializer& ObjectInitializer);
