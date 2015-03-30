@@ -7,6 +7,9 @@
 #include "GlowBugCharacter.h"
 #include "GlowBugGameMode.h"
 
+
+
+
 //constructor
 ADefaultBlock::ADefaultBlock(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {

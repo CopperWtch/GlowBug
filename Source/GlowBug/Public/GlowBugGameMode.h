@@ -24,11 +24,11 @@ class AGlowBugGameMode : public AGameMode
 
 	AMenuController* menuC;
 
+
 public:
 	AGlowBugGameMode(const FObjectInitializer& ObjectInitializer);
 	EGlowBugPlayState GetCurrentState() const;
 	void SetCurrentState(EGlowBugPlayState NewState);
-
 
 
 private:

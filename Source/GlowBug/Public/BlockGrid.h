@@ -3,11 +3,23 @@
 #pragma once
 
 #include "GameFramework/Actor.h"
+#include <list>
+#include <vector>
+#include "GlowBugGameMode.h"
 #include "BlockGrid.generated.h"
+
+using namespace std;
 
 /**
  * Class to spawn the blocks
  */
+
+struct Coordinate
+{
+	int x;
+	int y;
+};
+
 UCLASS(minimalapi)
 //GLOWBUG_API
 class ABlockGrid : public AActor
@@ -18,6 +30,7 @@ class ABlockGrid : public AActor
 	UPROPERTY(Category = Grid, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class USceneComponent* DummyRoot;
 private:
+
 	//number of Blocks in the level
 	int32 countBlocks;
 	//every block in the grid is spawned
@@ -29,11 +42,7 @@ public:
 
 	/** Number of blocks along each side of grid */
 	UPROPERTY(Category = Grid, EditAnywhere, BlueprintReadOnly)
-		int32 Size;
-	
-	/** Spacing of blocks */
-	UPROPERTY(Category = Grid, EditAnywhere, BlueprintReadOnly)
-		float BlockSpacing;
+	int32 Size;
 	
 	// Begin AActor interface
 	virtual void BeginPlay() override;
@@ -56,4 +65,16 @@ public:
 	//get/Set bIsCompleted
 	bool IsCompleted(){ return bIsCompleted; }
 	void SetIsCompleted(bool state){ bIsCompleted = state; }
+
+
+	//Generate the level
+
+	bool grid[50][50];
+	int steps[4];
+
+	Coordinate GetNextPosition(vector<Coordinate> freeSpots, Coordinate currPos, int steps[4]);
+	void GenerateLevel(int maxCount);
+	void SpawnLevel(bool grid[50][50]);
+	vector<Coordinate> findFreeSpots(Coordinate position, bool grid[50][50]);
+	Coordinate exitPosition;
 };

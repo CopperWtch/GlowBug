@@ -23,14 +23,23 @@ public:
 	UPROPERTY(EditAnywhere, Category = UI)
 		TSubclassOf<UUserWidget> GameOverWidgetType;
 
+	UPROPERTY(EditAnywhere, Category = UI)
+		TSubclassOf<UUserWidget> GameWonWidgetType;
+
 
 public:
 	void ShowGameOver();
 	void HideGameOver();
 
+	void ShowGameWon();
+	void HideGameWon();
+
 private:
 	UPROPERTY(Transient)
 		UUserWidget* _gameOverWidget;
+
+	UPROPERTY(Transient)
+		UUserWidget* _gameWonWidget;
 	
 	
 };

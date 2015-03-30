@@ -11,7 +11,7 @@ void AMenuController::ShowGameOver()
 	UPlayer* p = this->Player;
 	auto localPlayer = Cast<ULocalPlayer>(p);
 
-	//if (!_gameOverWidget && localPlayer)
+	//if (!_gameOverWidget)
 	if (!_gameOverWidget)
 	{
 		_gameOverWidget = CreateWidget<UUserWidget>(GetWorld(), GameOverWidgetType);
@@ -22,6 +22,27 @@ void AMenuController::ShowGameOver()
 		_gameOverWidget->AddToViewport();
 		bShowMouseCursor = true;
 	}
+
+}
+
+void AMenuController::ShowGameWon()
+{
+	// CreateWidget() expects the local player to be set for this player controller
+	UPlayer* p = this->Player;
+	auto localPlayer = Cast<ULocalPlayer>(p);
+
+	//if (!_gameOverWidget)
+	if (!_gameWonWidget)
+	{
+		_gameWonWidget = CreateWidget<UUserWidget>(GetWorld(), GameWonWidgetType);
+	}
+
+	if (_gameWonWidget)
+	{
+		_gameWonWidget->AddToViewport();
+		bShowMouseCursor = true;
+	}
+
 }
 
 void AMenuController::HideGameOver()
@@ -29,5 +50,13 @@ void AMenuController::HideGameOver()
 	if (_gameOverWidget)
 	{
 		_gameOverWidget->RemoveFromViewport();
+	}
+}
+
+void AMenuController::HideGameWon()
+{
+	if (_gameWonWidget)
+	{
+		_gameWonWidget->RemoveFromViewport();
 	}
 }

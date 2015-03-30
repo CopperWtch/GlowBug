@@ -37,10 +37,10 @@ void AGlowBugGameMode::HandleNewState(EGlowBugPlayState NewState)
 	case EGlowBugPlayState::EPlaying:
 		break;
 	case EGlowBugPlayState::EGameOver:
-
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, "Game Over");
 		if (!menuC && menuBP && GetWorld())
 		{
+		
 			menuC = GetWorld()->SpawnActor<AMenuController>(menuBP, FVector(0, 0, 0), FRotator(0, 0, 0));
 			menuC->ShowGameOver();
 		}
@@ -49,6 +49,12 @@ void AGlowBugGameMode::HandleNewState(EGlowBugPlayState NewState)
 		//ShowGameOver();
 		break;
 	case EGlowBugPlayState::EGameWon:
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, "Game Won");
+		if (!menuC && menuBP && GetWorld())
+		{
+			menuC = GetWorld()->SpawnActor<AMenuController>(menuBP, FVector(0, 0, 0), FRotator(0, 0, 0));
+			menuC->ShowGameWon();
+		}
 		break;
 	case EGlowBugPlayState::EUnknown:
 	default:
