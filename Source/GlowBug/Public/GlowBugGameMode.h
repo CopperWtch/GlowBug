@@ -30,6 +30,8 @@ public:
 	EGlowBugPlayState GetCurrentState() const;
 	void SetCurrentState(EGlowBugPlayState NewState);
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "View Target")
+		AActor* camera;
 
 private:
 	EGlowBugPlayState CurrentState;

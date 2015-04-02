@@ -16,6 +16,10 @@ ABlockGrid::ABlockGrid(const FObjectInitializer& ObjectInitializer)
 
 	//set defaults
 	countBlocks = 0;
+	maxY = 0;
+	minY = 10000;
+	maxX = 0;
+	minX = 10000;
 	SetIsCompleted(false);
 
 	Size = 50;
@@ -36,15 +40,11 @@ void ABlockGrid::BeginPlay()
 
 	//do
 	//{
-		GenerateLevel(Size);
 	//	c++;
 	//} while (steps[0] > 10 || steps[1] > 10 || steps[2] > 10 || steps[3] > 10);
 	//FString TheFloatStr = FString::SanitizeFloat(c);
 	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, TheFloatStr);
 
-
-	SpawnLevel(grid);
-	
 	// USE EXITPOSITION TO SPAWN EXIT BLOCK
 
 
@@ -62,12 +62,75 @@ void ABlockGrid::BeginPlay()
 	//	msg="";
 	//}
 
+	GetNewLevel();
+
+}
+
+void ABlockGrid::GetNewLevel()
+{
+	countBlocks = 0;
+	maxY = 0;
+	minY = 10000;
+	maxX = 0;
+	minX = 10000;
+
+	//Clear the grid to allow for new generation
+	for (int i = 0; i < Size; i++)
+	{
+		for (int j = 0; j < Size; j++)
+		{
+			grid[i][j] = false;
+		}
+	}
+
+
+	for (TActorIterator<ADefaultBlock> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+	{
+		ActorItr->Destroy();
+	}
+
+	for (TActorIterator<AExitBlock> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+	{
+		ActorItr->Destroy();
+	}
+
+	GenerateLevel(Size);
+
+	SpawnLevel(grid);
 
 
 }
 
+void ABlockGrid::GetOldLevel()
+{
+	countBlocks = 0;
+	maxY = 0;
+	minY = 10000;
+	maxX = 0;
+	minX = 10000;
+
+	for (TActorIterator<ADefaultBlock> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+	{
+		ActorItr->Destroy();
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Yellow, TEXT("Block Destroyed"));
+	}
+
+	for (TActorIterator<AExitBlock> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+	{
+		ActorItr->Destroy();
+		GEngine->AddOnScreenDebugMessage(-1, 100.f, FColor::Yellow, TEXT("Exit Destroyed"));
+	}
+
+	AGlowBugGameMode* gm = (AGlowBugGameMode*)GetWorld()->GetAuthGameMode();
+	gm->SetCurrentState(EGlowBugPlayState::EPlaying);
+
+	SpawnLevel(grid);
+}
+
 void ABlockGrid::GenerateLevel(int maxCount)
 {
+	AGlowBugGameMode* gm = (AGlowBugGameMode*)GetWorld()->GetAuthGameMode();
+	gm->SetCurrentState(EGlowBugPlayState::EPlaying);
 
 	Coordinate start;
 	start.x=(int)maxCount/2;
@@ -235,6 +298,19 @@ void ABlockGrid::SpawnLevel(bool grid[50][50])
 				Coordinate position;
 				position.x = i * 120;
 				position.y = j * 120;
+
+				//set height of level
+				if (position.y>maxY)
+					maxY = position.y;
+				if (position.y < minY)
+					minY = position.y;
+
+				//set width of level
+				if (position.x>maxX)
+					maxX = position.x;
+				if (position.x < minX)
+					minX= position.x;
+
 				const FVector BlockLocation = FVector(position.x, position.y, 0.f);
 				if (i == exitPosition.x && j == exitPosition.y)
 				{
@@ -274,4 +350,16 @@ void ABlockGrid::SpawnLevel(bool grid[50][50])
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, TheFloatStr);
 	TheFloatStr = FString::SanitizeFloat(steps[3]);
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TheFloatStr);
+}
+
+
+float ABlockGrid::GetMidY()
+{
+	//return minY+(maxY-minY) + 500;
+	return maxY;
+}
+float ABlockGrid::GetMidX()
+{
+	//return minY+(maxY-minY) + 500;
+	return minX;
 }

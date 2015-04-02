@@ -33,6 +33,11 @@ private:
 
 	//number of Blocks in the level
 	int32 countBlocks;
+	float maxY;
+	float minY;
+	float maxX;
+	float minX;
+
 	//every block in the grid is spawned
 	bool bIsCompleted;
 
@@ -55,16 +60,19 @@ public:
 	int32 GetCountBlocks()
 	{
 		return countBlocks;
-	}
+	};
 	//set number of blocks in the grid without the exit block
 	void SetCountBlocks(int32 count)
 	{
 		countBlocks = count;
-	}
+	};
+
+
+
 
 	//get/Set bIsCompleted
-	bool IsCompleted(){ return bIsCompleted; }
-	void SetIsCompleted(bool state){ bIsCompleted = state; }
+	bool IsCompleted(){ return bIsCompleted; };
+	void SetIsCompleted(bool state){ bIsCompleted = state; };
 
 
 	//Generate the level
@@ -75,6 +83,20 @@ public:
 	Coordinate GetNextPosition(vector<Coordinate> freeSpots, Coordinate currPos, int steps[4]);
 	void GenerateLevel(int maxCount);
 	void SpawnLevel(bool grid[50][50]);
+	
 	vector<Coordinate> findFreeSpots(Coordinate position, bool grid[50][50]);
 	Coordinate exitPosition;
+
+	UFUNCTION(BlueprintCallable, Category = "NewLevel")
+	void GetNewLevel();
+	UFUNCTION(BlueprintCallable, Category = "NewLevel")
+	void GetOldLevel();
+
+	//returns spread of level
+	UFUNCTION(BlueprintCallable, Category = "NewLevel")
+		float GetMidY();
+	//returns spread of level
+	UFUNCTION(BlueprintCallable, Category = "NewLevel")
+		float GetMidX();
+
 };
