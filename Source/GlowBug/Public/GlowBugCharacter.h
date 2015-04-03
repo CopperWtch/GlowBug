@@ -1,32 +1,40 @@
 // Copyright 1998-2014 Epic Games, Inc. All Rights Reserved.
 #pragma once
 #include "GameFramework/Character.h"
+#include "DefaultBlock.h"
+#include <vector>
 #include "GlowBugCharacter.generated.h"
+
+
+//enum to store the current movement
+enum class ECharacterMovement : short
+{
+	EForward,
+	EBack,
+	ERight,
+	ELeft,
+	ENone
+};
 
 UCLASS(config=Game)
 class AGlowBugCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
-	/** Camera boom positioning the camera behind the character */
-	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	//class USpringArmComponent* CameraBoom;
-
-	/** Follow camera */
-	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	//class UCameraComponent* FollowCamera;
 public:
 	AGlowBugCharacter(const FObjectInitializer& ObjectInitializer);
 
-	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
-	float BaseTurnRate;
 
-	/** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
-	float BaseLookUpRate;
 
 protected:
+
+	ECharacterMovement currentMovement;
+
+	//whether or not the character can move in different directions at this point in time
+	bool bCanMoveForward;
+	bool bCanMoveBack;
+	bool bCanMoveRight;
+	bool bCanMoveLeft;
 
 	/** Called for forwards/backward input */
 	void MoveForward(float Value);
@@ -34,23 +42,18 @@ protected:
 	/** Called for side to side input */
 	void MoveRight(float Value);
 
-	/** 
-	 * Called via input to turn at a given rate. 
-	 * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
-	 */
-	void TurnAtRate(float Rate);
-
 	/**
-	 * Called via input to turn look up/down at a given rate. 
-	 * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
-	 */
-	void LookUpAtRate(float Rate);
+	* Called via input to turn at a given rate.
+	* @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
+	*/
+	void OnStepNorth();
+	void OnStepSouth();
+	void OnStepEast();
+	void OnStepWest();
+	void OnMovementReleased();
 
-	/** Handler for when a touch input begins. */
-	void TouchStarted(ETouchIndex::Type FingerIndex, FVector Location);
+	FVector newLocation;
 
-	/** Handler for when a touch input stops. */
-	void TouchStopped(ETouchIndex::Type FingerIndex, FVector Location);
 
 protected:
 	// APawn interface
@@ -58,10 +61,7 @@ protected:
 	// End of APawn interface
 
 public:
-	/** Returns CameraBoom subobject **/
-	//FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
-	/** Returns FollowCamera subobject **/
-	//FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
 	
 	//Array of Actors the Character is currently colliding with
 	TArray<AActor*> CollectedActors;

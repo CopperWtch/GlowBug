@@ -35,19 +35,6 @@ void ABlockGrid::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//Generate level grid
-	//int c = 0;
-
-	//do
-	//{
-	//	c++;
-	//} while (steps[0] > 10 || steps[1] > 10 || steps[2] > 10 || steps[3] > 10);
-	//FString TheFloatStr = FString::SanitizeFloat(c);
-	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, TheFloatStr);
-
-	// USE EXITPOSITION TO SPAWN EXIT BLOCK
-
-
 	//FString msg = "";
 	//for(int i =0; i<Size; i++)
 	//{
@@ -68,6 +55,11 @@ void ABlockGrid::BeginPlay()
 
 void ABlockGrid::GetNewLevel()
 {
+	steps[0] = 1;
+	steps[1] = 1;
+	steps[2] = 1;
+	steps[3] = 1;
+
 	countBlocks = 0;
 	maxY = 0;
 	minY = 10000;
@@ -103,6 +95,11 @@ void ABlockGrid::GetNewLevel()
 
 void ABlockGrid::GetOldLevel()
 {
+	steps[0] = 1;
+	steps[1] = 1;
+	steps[2] = 1;
+	steps[3] = 1;
+
 	countBlocks = 0;
 	maxY = 0;
 	minY = 10000;

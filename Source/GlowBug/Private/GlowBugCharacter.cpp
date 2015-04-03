@@ -3,7 +3,7 @@
 #include "GlowBug.h"
 #include "Engine.h"
 #include "GlowBugCharacter.h"
-#include "DefaultBlock.h"
+
 
 //////////////////////////////////////////////////////////////////////////
 // AGlowBugCharacter
@@ -13,10 +13,6 @@ AGlowBugCharacter::AGlowBugCharacter(const FObjectInitializer& ObjectInitializer
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
-
-	// set our turn rates for input
-	BaseTurnRate = 45.f;
-	BaseLookUpRate = 45.f;
 
 	// Don't rotate when the controller rotates. Let that just affect the camera.
 	bUseControllerRotationPitch = false;
@@ -29,19 +25,12 @@ AGlowBugCharacter::AGlowBugCharacter(const FObjectInitializer& ObjectInitializer
 	//GetCharacterMovement()->JumpZVelocity = 600.f;
 	GetCharacterMovement()->AirControl = 0.2f;
 
-	// Create a camera boom (pulls in towards the player if there is a collision)
-	//CameraBoom = ObjectInitializer.CreateDefaultSubobject<USpringArmComponent>(this, TEXT("CameraBoom"));
-	//CameraBoom->AttachTo(RootComponent);
-	//CameraBoom->TargetArmLength = 300.0f; // The camera follows at this distance behind the character	
-	//CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
+	currentMovement = ECharacterMovement::ENone;
+	bCanMoveForward = true;
+	bCanMoveBack = true;
+	bCanMoveRight = true;
+	bCanMoveLeft = true;
 
-	// Create a follow camera
-	//FollowCamera = ObjectInitializer.CreateDefaultSubobject<UCameraComponent>(this, TEXT("FollowCamera"));
-	//FollowCamera->AttachTo(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
-	//FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
-
-	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
-	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -52,51 +41,13 @@ void AGlowBugCharacter::SetupPlayerInputComponent(class UInputComponent* InputCo
 	// Set up gameplay key bindings
 	check(InputComponent);
 
-	InputComponent->BindAxis("MoveForward", this, &AGlowBugCharacter::MoveForward);
-	InputComponent->BindAxis("MoveRight", this, &AGlowBugCharacter::MoveRight);
-
-	// We have 2 versions of the rotation bindings to handle different kinds of devices differently
-	// "turn" handles devices that provide an absolute delta, such as a mouse.
-	// "turnrate" is for devices that we choose to treat as a rate of change, such as an analog joystick
-	//InputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
-	//InputComponent->BindAxis("TurnRate", this, &AGlowBugCharacter::TurnAtRate);
-	//InputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
-	//InputComponent->BindAxis("LookUpRate", this, &AGlowBugCharacter::LookUpAtRate);
-
-	// handle touch devices
-	InputComponent->BindTouch(IE_Pressed, this, &AGlowBugCharacter::TouchStarted);
-	InputComponent->BindTouch(IE_Released, this, &AGlowBugCharacter::TouchStopped);
+	InputComponent->BindAction("StepNorth", IE_Released, this, &AGlowBugCharacter::OnStepNorth);
+	InputComponent->BindAction("StepSouth", IE_Released, this, &AGlowBugCharacter::OnStepSouth);
+	InputComponent->BindAction("StepEast", IE_Released, this, &AGlowBugCharacter::OnStepEast);
+	InputComponent->BindAction("StepWest", IE_Released, this, &AGlowBugCharacter::OnStepWest);
 }
 
 
-void AGlowBugCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)
-{
-	// jump, but only on the first touch
-	if (FingerIndex == ETouchIndex::Touch1)
-	{
-		Jump();
-	}
-}
-
-void AGlowBugCharacter::TouchStopped(ETouchIndex::Type FingerIndex, FVector Location)
-{
-	if (FingerIndex == ETouchIndex::Touch1)
-	{
-		StopJumping();
-	}
-}
-
-void AGlowBugCharacter::TurnAtRate(float Rate)
-{
-	// calculate delta for this frame from the rate information
-	AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
-}
-
-void AGlowBugCharacter::LookUpAtRate(float Rate)
-{
-	// calculate delta for this frame from the rate information
-	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
-}
 
 void AGlowBugCharacter::MoveForward(float Value)
 {
@@ -128,6 +79,48 @@ void AGlowBugCharacter::MoveRight(float Value)
 	}
 }
 
+void AGlowBugCharacter::OnStepNorth()
+{
+
+	//this->SetActorLocation(this->GetActorLocation() + FVector(120.0f,0,0));
+
+	if (currentMovement == ECharacterMovement::ENone)
+	{	
+		newLocation = this->GetActorLocation() + FVector(120.0f, 0,0);
+		currentMovement = ECharacterMovement::EForward;
+	}
+
+}
+void AGlowBugCharacter::OnStepSouth()
+{
+	//this->SetActorLocation(this->GetActorLocation() + FVector(-120.f, 0, 0));
+	if (currentMovement == ECharacterMovement::ENone)
+	{
+		newLocation = this->GetActorLocation() + FVector(-120.0f, 0, 0);
+		currentMovement = ECharacterMovement::EBack;
+	}
+}
+void AGlowBugCharacter::OnStepEast()
+{
+
+	//this->SetActorLocation(this->GetActorLocation() + FVector(120.0f,0,0));
+	if (currentMovement == ECharacterMovement::ENone)
+	{
+		newLocation = this->GetActorLocation() + FVector(0, 120.f, 0);
+		currentMovement = ECharacterMovement::ERight;
+	}
+}
+void AGlowBugCharacter::OnStepWest()
+{
+	//this->SetActorLocation(this->GetActorLocation() + FVector(-120.f, 0, 0));
+	if (currentMovement == ECharacterMovement::ENone)
+	{
+		newLocation = this->GetActorLocation() + FVector(0, -120.f, 0);
+		currentMovement = ECharacterMovement::ELeft;
+	}
+}
+
+
 //Called constantly to check for collision
 void AGlowBugCharacter::StepOff()
 {
@@ -143,29 +136,29 @@ void AGlowBugCharacter::StepOff()
 		//make sure the block is active & not destroyed already
 		if (block != NULL && !block->IsPendingKill() && block->bIsActive)
 		{
-			//if (block->GetBlockEast())
-			//{
-			//	FString TheFloatStr = FString::SanitizeFloat(block->GetBlockEast()->GetActorLocation().X);
-			//	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, *TheFloatStr);
-			//}
-			//if (block->GetBlockNorth())
-			//{
-			//	FString TheFloatStr = FString::SanitizeFloat(block->GetBlockNorth()->GetActorLocation().X);
-			//	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, *TheFloatStr);
-			//}
-			//if (block->GetBlockWest())
-			//{
-				//FString TheFloatStr = FString::SanitizeFloat(block->GetBlockWest()->GetActorLocation().X);
-				//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, *TheFloatStr);
-			//	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("x: %f, y: %f"), block->GetBlockWest()->GetActorLocation().X, block->GetBlockWest()->GetActorLocation().Y));
-			//}
-			//if (block->GetBlockSouth())
-			//{
-			//	FString TheFloatStr = FString::SanitizeFloat(block->GetBlockSouth()->GetActorLocation().X);
-			//	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, *TheFloatStr);
-			//}
 
 			block->bIsColliding=true;
+
+			if (block->GetBlockNorth())
+				bCanMoveForward = true;
+			else
+				bCanMoveForward = false;
+
+			if (block->GetBlockSouth())
+				bCanMoveBack = true;
+			else
+				bCanMoveBack = false;
+
+			if (block->GetBlockEast())
+				bCanMoveRight = true;
+			else
+				bCanMoveRight = false;
+
+			if (block->GetBlockWest())
+				bCanMoveLeft = true;
+			else
+				bCanMoveLeft = false;
+
 		}
 	}
 
@@ -176,5 +169,73 @@ void AGlowBugCharacter::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 
 	//call in every update to check for collision
-	StepOff();
+
+
+	switch (currentMovement)
+	{
+
+	case ECharacterMovement::EForward:
+
+		if (bCanMoveForward)
+		{		
+		if (GetActorLocation().X <= newLocation.X + 3 &&
+			GetActorLocation().X >= newLocation.X - 3)
+			currentMovement = ECharacterMovement::ENone;
+		else
+			MoveForward(1.f);
+		}
+		else
+			currentMovement = ECharacterMovement::ENone;
+
+
+		break;
+	case ECharacterMovement::EBack:
+
+		if (bCanMoveBack)
+		{
+		if (GetActorLocation().X <= newLocation.X + 3 &&
+			GetActorLocation().X >= newLocation.X - 3)
+			currentMovement = ECharacterMovement::ENone;
+		else
+			MoveForward(-1.f);
+		}
+		else
+			currentMovement = ECharacterMovement::ENone;
+		
+		break;
+	case ECharacterMovement::ERight:
+
+		if (bCanMoveRight)
+		{
+			if (GetActorLocation().Y<= newLocation.Y +3 &&
+				GetActorLocation().Y>= newLocation.Y- 3)
+				currentMovement = ECharacterMovement::ENone;
+			else
+				MoveRight(1.f);
+		}	
+		else
+			currentMovement = ECharacterMovement::ENone;
+
+		break;
+	case ECharacterMovement::ELeft:
+
+		if (bCanMoveLeft)
+		{
+			if (GetActorLocation().Y <= newLocation.Y + 3 &&
+				GetActorLocation().Y >= newLocation.Y - 3)
+				currentMovement = ECharacterMovement::ENone;
+			else
+				MoveRight(-1.f);
+		}
+		else
+			currentMovement = ECharacterMovement::ENone;
+
+		break;
+	case ECharacterMovement::ENone:
+		StepOff();
+
+		break;
+
+	}
+
 }
