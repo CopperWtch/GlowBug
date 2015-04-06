@@ -11,8 +11,8 @@
 AExitBlock::AExitBlock(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
 	//replace material
-	static ConstructorHelpers::FObjectFinder<UMaterial> Material_Blue(TEXT("MaterialInstanceConstant'/Game/StarterContent/Materials/M_Rock_Sandstone.M_Rock_Sandstone'"));
-	BlockMesh->SetMaterial(0, Material_Blue.Object);
+	//static ConstructorHelpers::FObjectFinder<UMaterial> Material_Blue(TEXT("MaterialInstanceConstant'/Game/StarterContent/Materials/M_Rock_Sandstone.M_Rock_Sandstone'"));
+	//BlockMesh->SetMaterial(0, Material_Blue.Object);
 
 
 }

@@ -19,10 +19,11 @@ class AGlowBugGameMode : public AGameMode
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditDefaultsOnly, Category = UI)
-	TSubclassOf<class AMenuController> menuBP;
+	/*UPROPERTY(EditDefaultsOnly, Category = UI)
+	TSubclassOf<class AMenuController> menuBP;*/
 
 	AMenuController* menuC;
+
 
 
 public:
@@ -32,6 +33,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "View Target")
 		AActor* camera;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = BPClasses)
+		UClass* menuBP;
 
 private:
 	EGlowBugPlayState CurrentState;

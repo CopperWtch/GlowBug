@@ -13,7 +13,6 @@ class GLOWBUG_API ADefaultBlock : public AActor
 {
 	GENERATED_BODY()
 private:
-private:
 
 	//neighbour blocks
 	ADefaultBlock* blockNorth;
@@ -36,8 +35,8 @@ public:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)
 	class USphereComponent* BaseCollisionComponent;
 
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)
-	class UStaticMeshComponent* BlockMesh;
+	//UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)
+	//class UStaticMeshComponent* BlockMesh;
 
 	UFUNCTION(BlueprintNativeEvent)
 		void OnSteppedOff();
@@ -45,7 +44,7 @@ public:
 	/** Returns BaseCollisionComponent **/
 	FORCEINLINE class USceneComponent* GetBaseCollisionComponent() const { return BaseCollisionComponent; }
 	/** Returns BlockMesh subobject **/
-	FORCEINLINE class UStaticMeshComponent* GetBlockMesh() const { return BlockMesh; }
+	//FORCEINLINE class UStaticMeshComponent* GetBlockMesh() const { return BlockMesh; }
 
 
 	//for collision

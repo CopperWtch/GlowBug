@@ -1,9 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "GlowBug.h"
+#include <ctime>
 #include "BlockGrid.h"
-#include "DefaultBlock.h"
-#include "ExitBlock.h"
 #include "Engine.h"
 
 
@@ -55,6 +54,8 @@ void ABlockGrid::BeginPlay()
 
 void ABlockGrid::GetNewLevel()
 {
+	srand(static_cast <unsigned> (time(0)));
+
 	steps[0] = 1;
 	steps[1] = 1;
 	steps[2] = 1;
@@ -109,13 +110,13 @@ void ABlockGrid::GetOldLevel()
 	for (TActorIterator<ADefaultBlock> ActorItr(GetWorld()); ActorItr; ++ActorItr)
 	{
 		ActorItr->Destroy();
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Yellow, TEXT("Block Destroyed"));
+		//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Yellow, TEXT("Block Destroyed"));
 	}
 
 	for (TActorIterator<AExitBlock> ActorItr(GetWorld()); ActorItr; ++ActorItr)
 	{
 		ActorItr->Destroy();
-		GEngine->AddOnScreenDebugMessage(-1, 100.f, FColor::Yellow, TEXT("Exit Destroyed"));
+		//GEngine->AddOnScreenDebugMessage(-1, 100.f, FColor::Yellow, TEXT("Exit Destroyed"));
 	}
 
 	AGlowBugGameMode* gm = (AGlowBugGameMode*)GetWorld()->GetAuthGameMode();
@@ -172,7 +173,7 @@ void ABlockGrid::GenerateLevel(int maxCount)
 
 	}
 
-	GEngine->AddOnScreenDebugMessage(-1, 100.f, FColor::Yellow, TEXT("PLACE EXIT"));
+	//GEngine->AddOnScreenDebugMessage(-1, 100.f, FColor::Yellow, TEXT("PLACE EXIT"));
 	exitPosition.x=position.x;
 	exitPosition.y=position.y;
 
@@ -193,7 +194,7 @@ Coordinate ABlockGrid::GetNextPosition(vector<Coordinate> freeSpots, Coordinate 
 	Coordinate posSouth;
 	Coordinate posWest;
 
-	for (int i = 0; i < freeSpots.size(); i++)
+	for (size_t i = 0; i < freeSpots.size(); i++)
 	{
 		if (freeSpots[i].x == currPos.x)
 		{
@@ -311,16 +312,19 @@ void ABlockGrid::SpawnLevel(bool grid[50][50])
 				const FVector BlockLocation = FVector(position.x, position.y, 0.f);
 				if (i == exitPosition.x && j == exitPosition.y)
 				{
-					AExitBlock* exit = GetWorld()->SpawnActor<AExitBlock>(BlockLocation, FRotator(0, 0, 0));
+					//AExitBlock* exitBlock = GetWorld()->SpawnActor<AExitBlock>(BlockLocation, FRotator(0, 0, 0));
+
+					exitBlock = GetWorld()->SpawnActor<AExitBlock>(exitBlockBP,BlockLocation, FRotator(0, 0, 0));
 					if (exit != NULL)
 					{
-						exit->OwningGrid = this;
+						exitBlock->OwningGrid = this;
 					}
 
 				}
 				else
 				{
-					ADefaultBlock* newBlock = GetWorld()->SpawnActor<ADefaultBlock>(BlockLocation, FRotator(0, 0, 0));
+					//ADefaultBlock* newBlock = GetWorld()->SpawnActor<ADefaultBlock>(BlockLocation, FRotator(0, 0, 0));
+					newBlock = GetWorld()->SpawnActor<ADefaultBlock>(newBlockBP, BlockLocation, FRotator(0, 0, 0));
 					if (newBlock != NULL)
 					{
 						newBlock->OwningGrid = this;
@@ -339,14 +343,14 @@ void ABlockGrid::SpawnLevel(bool grid[50][50])
 		BlockItr->SetNeighbours();
 	}
 
-	FString TheFloatStr = FString::SanitizeFloat(steps[0]);
+	/*FString TheFloatStr = FString::SanitizeFloat(steps[0]);
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, TheFloatStr);
 	TheFloatStr = FString::SanitizeFloat(steps[1]);
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TheFloatStr);
 	TheFloatStr = FString::SanitizeFloat(steps[2]);
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, TheFloatStr);
 	TheFloatStr = FString::SanitizeFloat(steps[3]);
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TheFloatStr);
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TheFloatStr);*/
 }
 
 

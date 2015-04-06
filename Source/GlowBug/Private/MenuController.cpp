@@ -20,7 +20,11 @@ void AMenuController::ShowGameOver()
 	if (_gameOverWidget)
 	{
 		_gameOverWidget->AddToViewport();
-		bShowMouseCursor = true;
+		APlayerController* MyController = GetWorld()->GetFirstPlayerController();
+
+		MyController->bShowMouseCursor = true;
+		MyController->bEnableClickEvents = true;
+		MyController->bEnableMouseOverEvents = true;
 	}
 
 }
@@ -40,7 +44,11 @@ void AMenuController::ShowGameWon()
 	if (_gameWonWidget)
 	{
 		_gameWonWidget->AddToViewport();
-		bShowMouseCursor = true;
+		APlayerController* MyController = GetWorld()->GetFirstPlayerController();
+
+		MyController->bShowMouseCursor = true;
+		MyController->bEnableClickEvents = true;
+		MyController->bEnableMouseOverEvents = true;
 	}
 
 }

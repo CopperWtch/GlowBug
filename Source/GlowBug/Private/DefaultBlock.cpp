@@ -23,19 +23,25 @@ ADefaultBlock::ADefaultBlock(const FObjectInitializer& ObjectInitializer) : Supe
 	
 
 	//Create the static mesh component
-	BlockMesh = ObjectInitializer.CreateDefaultSubobject<UStaticMeshComponent>(this, TEXT("BlockMesh"));
+	/*BlockMesh = ObjectInitializer.CreateDefaultSubobject<UStaticMeshComponent>(this, TEXT("BlockMesh"));*/
 
 	//create mesh and material
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> StaticMesh(TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_Cube.Shape_Cube'"));
-	static ConstructorHelpers::FObjectFinder<UMaterial> Material_Blue(TEXT("MaterialInstanceConstant'/Game/StarterContent/Materials/M_AssetPlatform.M_AssetPlatform'"));
-	
-	BlockMesh->SetStaticMesh(StaticMesh.Object);
-	BlockMesh->SetMaterial(0, Material_Blue.Object);
-	BlockMesh->SetRelativeScale3D(FVector(1, 1, 0.25f));
-	BlockMesh->SetRelativeLocation(FVector(0.f, 0.f, 0.f));
+	//static ConstructorHelpers::FObjectFinder<UStaticMesh> StaticMesh(TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_Cube.Shape_Cube'"));
+	//
+	//static ConstructorHelpers::FObjectFinder<UMaterial> Material(TEXT("MaterialInstanceConstant'/Game/StarterContent/Materials/M_AssetPlatform.M_AssetPlatform'"));
+	//if (Material.Object != NULL)
+	//{
+	//	UMaterialInstance* TheMaterial = (UMaterialInstance*)Material.Object;
+	//	UMaterialInstanceDynamic* TheMaterial_Dyn = UMaterialInstanceDynamic::Create(TheMaterial, this);
+	//	BlockMesh->SetMaterial(0, TheMaterial_Dyn);
+	//}
+
+	//BlockMesh->SetStaticMesh(StaticMesh.Object);
+	//BlockMesh->SetRelativeScale3D(FVector(1, 1, 0.25f));
+	//BlockMesh->SetRelativeLocation(FVector(0.f, 0.f, 0.f));
 
 	//attach the static mesh component to the root component
-	BlockMesh->AttachTo(RootComponent);
+	/*BlockMesh->AttachTo(RootComponent);*/
 
 
 	bIsActive = true;
@@ -85,7 +91,7 @@ void ADefaultBlock::OnSteppedOff_Implementation()
 
 
 	//To Debug we print a log on the screen
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, "Tile Destroyed!");
+	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, "Tile Destroyed!");
 }
 
 void ADefaultBlock::CheckCollision()
@@ -186,8 +192,8 @@ bool ADefaultBlock::CheckIsolation()
 		//tile has no neighbours
 		//ISolation: 
 
-		FString TheFloatStr = FString::SanitizeFloat(this->GetActorLocation().X);
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, *TheFloatStr);
+		/*FString TheFloatStr = FString::SanitizeFloat(this->GetActorLocation().X);
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, *TheFloatStr);*/
 
 		return true;
 
@@ -201,7 +207,7 @@ void ADefaultBlock::WinGame()
 	AGlowBugGameMode* gm = (AGlowBugGameMode*)GetWorld()->GetAuthGameMode();
 	gm->SetCurrentState(EGlowBugPlayState::EGameWon);
 
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, "WIN!");
+	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, "WIN!");
 }
 
 void ADefaultBlock::LoseGame()
@@ -209,5 +215,5 @@ void ADefaultBlock::LoseGame()
 	AGlowBugGameMode* gm = (AGlowBugGameMode*)GetWorld()->GetAuthGameMode();
 	gm->SetCurrentState(EGlowBugPlayState::EGameOver);
 
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, "LOST!");
+	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, "LOST!");
 }

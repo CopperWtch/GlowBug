@@ -17,11 +17,11 @@ AGlowBugGameMode::AGlowBugGameMode(const FObjectInitializer& ObjectInitializer)
 
 	//menuController = GetWorld()->SpawnActor<AMenuController>(Blueprint, FVector(0,0,0), FRotator(0,0,0));
 
-	static ConstructorHelpers::FObjectFinder<UBlueprint> menuControllerBP(TEXT("Blueprint'/Game/Blueprints/MenuController_BP'"));
-	if (menuControllerBP.Object != NULL)
-	{
-		menuBP = (UClass*)menuControllerBP.Object->GeneratedClass;
-	}
+	//static ConstructorHelpers::FObjectFinder<UBlueprint> menuControllerBP(TEXT("Blueprint'/Game/Blueprints/MenuController_BP.MenuController_BP'"));
+	//if (menuControllerBP.Object != NULL)
+	//{
+	//	menuBP = (UClass*)menuControllerBP.Object->GeneratedClass;
+	//}
 
 }
 void AGlowBugGameMode::SetCurrentState(EGlowBugPlayState NewState)
@@ -62,7 +62,7 @@ void AGlowBugGameMode::HandleNewState(EGlowBugPlayState NewState)
 			
 		break;
 	case EGlowBugPlayState::EGameOver:
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, "Game Over");
+		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, "Game Over");
 		if (!menuC)
 		{
 			menuC = GetWorld()->SpawnActor<AMenuController>(menuBP, FVector(0, 0, 0), FRotator(0, 0, 0));
@@ -74,7 +74,7 @@ void AGlowBugGameMode::HandleNewState(EGlowBugPlayState NewState)
 		//ShowGameOver();
 		break;
 	case EGlowBugPlayState::EGameWon:
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, "Game Won");
+		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, "Game Won");
 		if (!menuC)
 		{
 			menuC = GetWorld()->SpawnActor<AMenuController>(menuBP, FVector(0, 0, 0), FRotator(0, 0, 0));

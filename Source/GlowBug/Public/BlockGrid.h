@@ -5,6 +5,8 @@
 #include "GameFramework/Actor.h"
 #include <list>
 #include <vector>
+#include "DefaultBlock.h"
+#include "ExitBlock.h"
 #include "GlowBugGameMode.h"
 #include "BlockGrid.generated.h"
 
@@ -41,8 +43,15 @@ private:
 	//every block in the grid is spawned
 	bool bIsCompleted;
 
+	ADefaultBlock* newBlock;
+	ADefaultBlock* exitBlock;
 	
 public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = BPClasses)
+		UClass* newBlockBP;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = BPClasses)
+		UClass* exitBlockBP;
+
 	ABlockGrid(const FObjectInitializer& ObjectInitializer);
 
 	/** Number of blocks along each side of grid */
