@@ -52,8 +52,6 @@ protected:
 	void OnStepWest();
 	void OnMovementReleased();
 
-	FVector newLocation;
-
 
 protected:
 	// APawn interface

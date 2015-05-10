@@ -21,7 +21,7 @@ ABlockGrid::ABlockGrid(const FObjectInitializer& ObjectInitializer)
 	minX = 10000;
 	SetIsCompleted(false);
 
-	Size = 50;
+	Size = 100;
 
 	steps[0] = 1;
 	steps[1] = 1;
@@ -87,7 +87,7 @@ void ABlockGrid::GetNewLevel()
 		ActorItr->Destroy();
 	}
 
-	GenerateLevel(Size);
+	GenerateLevel(80);
 
 	SpawnLevel(grid);
 
@@ -247,7 +247,7 @@ Coordinate ABlockGrid::GetNextPosition(vector<Coordinate> freeSpots, Coordinate 
 	return nextPos;
 }
 
-vector<Coordinate> ABlockGrid::findFreeSpots(Coordinate position, bool grid[50][50])
+vector<Coordinate> ABlockGrid::findFreeSpots(Coordinate position, bool grid[100][100])
 {
 	vector<Coordinate> freeSpots;
 
@@ -283,7 +283,7 @@ vector<Coordinate> ABlockGrid::findFreeSpots(Coordinate position, bool grid[50][
 	return freeSpots;
 }
 
-void ABlockGrid::SpawnLevel(bool grid[50][50])
+void ABlockGrid::SpawnLevel(bool grid[100][100])
 {
 
 	// LOOP THROUGH FIELD[][] TO SPAWN BLOCKS FOR EVERY ELEMENT == TRUE

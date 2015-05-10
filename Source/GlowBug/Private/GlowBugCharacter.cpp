@@ -41,10 +41,15 @@ void AGlowBugCharacter::SetupPlayerInputComponent(class UInputComponent* InputCo
 	// Set up gameplay key bindings
 	check(InputComponent);
 
-	InputComponent->BindAction("StepNorth", IE_Released, this, &AGlowBugCharacter::OnStepNorth);
-	InputComponent->BindAction("StepSouth", IE_Released, this, &AGlowBugCharacter::OnStepSouth);
-	InputComponent->BindAction("StepEast", IE_Released, this, &AGlowBugCharacter::OnStepEast);
-	InputComponent->BindAction("StepWest", IE_Released, this, &AGlowBugCharacter::OnStepWest);
+	InputComponent->BindAction("StepNorth", IE_Pressed, this, &AGlowBugCharacter::OnStepNorth);
+	InputComponent->BindAction("StepSouth", IE_Pressed, this, &AGlowBugCharacter::OnStepSouth);
+	InputComponent->BindAction("StepEast", IE_Pressed, this, &AGlowBugCharacter::OnStepEast);
+	InputComponent->BindAction("StepWest", IE_Pressed, this, &AGlowBugCharacter::OnStepWest);
+
+	InputComponent->BindAction("StepNorth", IE_Released, this, &AGlowBugCharacter::OnMovementReleased);
+	InputComponent->BindAction("StepSouth", IE_Released, this, &AGlowBugCharacter::OnMovementReleased);
+	InputComponent->BindAction("StepEast", IE_Released, this, &AGlowBugCharacter::OnMovementReleased);
+	InputComponent->BindAction("StepWest", IE_Released, this, &AGlowBugCharacter::OnMovementReleased);
 }
 
 
@@ -81,49 +86,57 @@ void AGlowBugCharacter::MoveRight(float Value)
 
 void AGlowBugCharacter::OnStepNorth()
 {
-
+	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("PRESSED"));
 	//this->SetActorLocation(this->GetActorLocation() + FVector(120.0f,0,0));
 
 	if (currentMovement == ECharacterMovement::ENone)
 	{	
-		newLocation = this->GetActorLocation() + FVector(120.0f, 0,0);
 		currentMovement = ECharacterMovement::EForward;
 	}
 
 }
 void AGlowBugCharacter::OnStepSouth()
 {
+	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("PRESSED"));
 	//this->SetActorLocation(this->GetActorLocation() + FVector(-120.f, 0, 0));
 	if (currentMovement == ECharacterMovement::ENone)
 	{
-		newLocation = this->GetActorLocation() + FVector(-120.0f, 0, 0);
 		currentMovement = ECharacterMovement::EBack;
 	}
 }
 void AGlowBugCharacter::OnStepEast()
 {
-
+	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("PRESSED"));
 	//this->SetActorLocation(this->GetActorLocation() + FVector(120.0f,0,0));
 	if (currentMovement == ECharacterMovement::ENone)
 	{
-		newLocation = this->GetActorLocation() + FVector(0, 120.f, 0);
 		currentMovement = ECharacterMovement::ERight;
 	}
 }
 void AGlowBugCharacter::OnStepWest()
 {
+	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("PRESSED"));
 	//this->SetActorLocation(this->GetActorLocation() + FVector(-120.f, 0, 0));
 	if (currentMovement == ECharacterMovement::ENone)
 	{
-		newLocation = this->GetActorLocation() + FVector(0, -120.f, 0);
 		currentMovement = ECharacterMovement::ELeft;
 	}
 }
 
+void AGlowBugCharacter::OnMovementReleased()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("RELEASED"));
+	//this->SetActorLocation(this->GetActorLocation() + FVector(-120.f, 0, 0));
+	if (currentMovement != ECharacterMovement::ENone)
+	{
+		currentMovement = ECharacterMovement::ENone;
+	}
+}
 
 //Called constantly to check for collision
 void AGlowBugCharacter::StepOff()
 {
+	
 	//Returns all the actors colliding with the character
 	CapsuleComponent->GetOverlappingActors(CollectedActors);
 
@@ -136,28 +149,32 @@ void AGlowBugCharacter::StepOff()
 		//make sure the block is active & not destroyed already
 		if (block != NULL && !block->IsPendingKill() && block->bIsActive)
 		{
-
+			
 			block->bIsColliding=true;
 
-			if (block->GetBlockNorth())
-				bCanMoveForward = true;
-			else
+			if (!block->GetBlockNorth() &&
+				this->GetActorLocation().X>block->GetActorLocation().X)
 				bCanMoveForward = false;
-
-			if (block->GetBlockSouth())
-				bCanMoveBack = true;
 			else
+				bCanMoveForward = true;
+
+			if (!block->GetBlockSouth() &&
+				this->GetActorLocation().X<block->GetActorLocation().X)
 				bCanMoveBack = false;
-
-			if (block->GetBlockEast())
-				bCanMoveRight = true;
 			else
+				bCanMoveBack = true;
+
+			if (!block->GetBlockEast() &&
+				this->GetActorLocation().Y>block->GetActorLocation().Y)
 				bCanMoveRight = false;
-
-			if (block->GetBlockWest())
-				bCanMoveLeft = true;
 			else
+				bCanMoveRight = true;
+
+			if (!block->GetBlockWest() &&
+				this->GetActorLocation().Y<block->GetActorLocation().Y)
 				bCanMoveLeft = false;
+			else
+				bCanMoveLeft = true;
 
 		}
 	}
@@ -167,9 +184,8 @@ void AGlowBugCharacter::StepOff()
 void AGlowBugCharacter::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-
 	//call in every update to check for collision
-
+	StepOff();
 
 	switch (currentMovement)
 	{
@@ -178,14 +194,13 @@ void AGlowBugCharacter::Tick(float DeltaSeconds)
 
 		if (bCanMoveForward)
 		{		
-		if (GetActorLocation().X <= newLocation.X + 3 &&
-			GetActorLocation().X >= newLocation.X - 3)
-			currentMovement = ECharacterMovement::ENone;
-		else
 			MoveForward(1.f);
 		}
 		else
+		{			
 			currentMovement = ECharacterMovement::ENone;
+		}
+
 
 
 		break;
@@ -193,46 +208,42 @@ void AGlowBugCharacter::Tick(float DeltaSeconds)
 
 		if (bCanMoveBack)
 		{
-		if (GetActorLocation().X <= newLocation.X + 3 &&
-			GetActorLocation().X >= newLocation.X - 3)
-			currentMovement = ECharacterMovement::ENone;
-		else
 			MoveForward(-1.f);
 		}
 		else
+		{	
 			currentMovement = ECharacterMovement::ENone;
+		}
+
 		
 		break;
 	case ECharacterMovement::ERight:
 
 		if (bCanMoveRight)
 		{
-			if (GetActorLocation().Y<= newLocation.Y +3 &&
-				GetActorLocation().Y>= newLocation.Y- 3)
-				currentMovement = ECharacterMovement::ENone;
-			else
 				MoveRight(1.f);
 		}	
 		else
+		{			
 			currentMovement = ECharacterMovement::ENone;
+		}
+
 
 		break;
 	case ECharacterMovement::ELeft:
 
 		if (bCanMoveLeft)
 		{
-			if (GetActorLocation().Y <= newLocation.Y + 3 &&
-				GetActorLocation().Y >= newLocation.Y - 3)
-				currentMovement = ECharacterMovement::ENone;
-			else
-				MoveRight(-1.f);
+			MoveRight(-1.f);
 		}
 		else
+		{
 			currentMovement = ECharacterMovement::ENone;
+		}
+			
 
 		break;
 	case ECharacterMovement::ENone:
-		StepOff();
 
 		break;
 

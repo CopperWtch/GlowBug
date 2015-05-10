@@ -86,14 +86,14 @@ public:
 
 	//Generate the level
 
-	bool grid[50][50];
+	bool grid[100][100];
 	int steps[4];
 
 	Coordinate GetNextPosition(vector<Coordinate> freeSpots, Coordinate currPos, int steps[4]);
 	void GenerateLevel(int maxCount);
-	void SpawnLevel(bool grid[50][50]);
+	void SpawnLevel(bool grid[100][100]);
 	
-	vector<Coordinate> findFreeSpots(Coordinate position, bool grid[50][50]);
+	vector<Coordinate> findFreeSpots(Coordinate position, bool grid[100][100]);
 	Coordinate exitPosition;
 
 	UFUNCTION(BlueprintCallable, Category = "NewLevel")
