@@ -1,13 +1,19 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+/**
+Game Development Project
+DefaultBlock.h
+Purpose: Header file for DefaultBlock.cpp
+
+@author Sarah Bulk
+*/
 
 #pragma once
 
 #include "GameFramework/Actor.h"
 #include "DefaultBlock.generated.h"
 
-/**
- * 
- */
+//////////////////////////////////////////////////////////////////////////////////////
+//Default Block declarations
+//////////////////////////////////////////////////////////////////////////////////////
 UCLASS()
 class GLOWBUG_API ADefaultBlock : public AActor
 {
@@ -20,32 +26,31 @@ private:
 	ADefaultBlock* blockEast;
 	ADefaultBlock* blockWest;
 
+	//colliding actors
 	TArray<AActor*> CollectedBlocks;
 	
 public:
+	//constructor
 	ADefaultBlock(const FObjectInitializer& ObjectInitializer);
 
+	//Is this block currently active?
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool bIsActive;
 
-	/** Grid that owns us */
+	//Grid this block is spawned in
 	UPROPERTY()
 	class ABlockGrid* OwningGrid;
 
+	//Collision Component
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)
 	class USphereComponent* BaseCollisionComponent;
 
-	//UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)
-	//class UStaticMeshComponent* BlockMesh;
-
+	//Reaction to the character stepping off a block
 	UFUNCTION(BlueprintNativeEvent)
-		void OnSteppedOff();
+	void OnSteppedOff();
 	
-	/** Returns BaseCollisionComponent **/
+	// Returns BaseCollisionComponent
 	FORCEINLINE class USceneComponent* GetBaseCollisionComponent() const { return BaseCollisionComponent; }
-	/** Returns BlockMesh subobject **/
-	//FORCEINLINE class UStaticMeshComponent* GetBlockMesh() const { return BlockMesh; }
-
 
 	//for collision
 	bool bIsColliding;

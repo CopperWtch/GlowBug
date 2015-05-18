@@ -1,4 +1,10 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+/**
+Game Development Project
+DefaultBlock.cpp
+Purpose: Check for and process collisions of standard blocks.
+
+@author Sarah Bulk
+*/
 
 #include "GlowBug.h"
 #include "BlockGrid.h"
@@ -8,66 +14,44 @@
 #include "GlowBugGameMode.h"
 
 
-
-
+//////////////////////////////////////////////////////////////////////////////////////
 //constructor
+//////////////////////////////////////////////////////////////////////////////////////
 ADefaultBlock::ADefaultBlock(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
-
-
-
 	//Create root scene component
 	BaseCollisionComponent = ObjectInitializer.CreateDefaultSubobject<USphereComponent>(this, TEXT("BaseSphereComponent"));
 	BaseCollisionComponent->SetSphereRadius(65);
 	RootComponent = BaseCollisionComponent;
-	
 
-	//Create the static mesh component
-	/*BlockMesh = ObjectInitializer.CreateDefaultSubobject<UStaticMeshComponent>(this, TEXT("BlockMesh"));*/
-
-	//create mesh and material
-	//static ConstructorHelpers::FObjectFinder<UStaticMesh> StaticMesh(TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_Cube.Shape_Cube'"));
-	//
-	//static ConstructorHelpers::FObjectFinder<UMaterial> Material(TEXT("MaterialInstanceConstant'/Game/StarterContent/Materials/M_AssetPlatform.M_AssetPlatform'"));
-	//if (Material.Object != NULL)
-	//{
-	//	UMaterialInstance* TheMaterial = (UMaterialInstance*)Material.Object;
-	//	UMaterialInstanceDynamic* TheMaterial_Dyn = UMaterialInstanceDynamic::Create(TheMaterial, this);
-	//	BlockMesh->SetMaterial(0, TheMaterial_Dyn);
-	//}
-
-	//BlockMesh->SetStaticMesh(StaticMesh.Object);
-	//BlockMesh->SetRelativeScale3D(FVector(1, 1, 0.25f));
-	//BlockMesh->SetRelativeLocation(FVector(0.f, 0.f, 0.f));
-
-	//attach the static mesh component to the root component
-	/*BlockMesh->AttachTo(RootComponent);*/
-
-
+	//Set defaults
 	bIsActive = true;
 	bIsColliding = false;
 
-	//Tick() function fires:
+	//Allow Tick() to fire
 	PrimaryActorTick.bCanEverTick = true;
 }
 
 
 
 
-//methods
+//////////////////////////////////////////////////////////////////////////////////////
+//React to the character stepping off a block
+//////////////////////////////////////////////////////////////////////////////////////
 void ADefaultBlock::OnSteppedOff_Implementation()
 {
+	//update block count in the owning grid
 	int32 blockCount = (OwningGrid->GetCountBlocks()) - 1;
 	OwningGrid->SetCountBlocks(blockCount);
-	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, "" + blockCount);
 
-	//Block is no longer active
+	//Deactivate this block
 	bIsActive = false;
 
 	//destroy the Block to remove it from the scene
 	Destroy();
 
 
+	//Remove this block from its neighbours
 	if (GetBlockEast())
 	{
 		//GetBlockEast()->SetNeighbours();
@@ -91,6 +75,9 @@ void ADefaultBlock::OnSteppedOff_Implementation()
 
 }
 
+//////////////////////////////////////////////////////////////////////////////////////
+//Check for collision with the character to see if they stepped off
+//////////////////////////////////////////////////////////////////////////////////////
 void ADefaultBlock::CheckCollision()
 {
 	for (TActorIterator<AGlowBugCharacter> CharacterItr(GetWorld()); CharacterItr; ++CharacterItr)
@@ -117,6 +104,9 @@ void ADefaultBlock::CheckCollision()
 	
 }
 
+//////////////////////////////////////////////////////////////////////////////////////
+//Fire on every update
+//////////////////////////////////////////////////////////////////////////////////////
 void ADefaultBlock::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
@@ -127,7 +117,7 @@ void ADefaultBlock::Tick(float DeltaSeconds)
 		//call in every update to check for collision
 		CheckCollision();
 
-		//Check for Isolation
+		//Check for Isolation & Lost game if isolated
 		if (CheckIsolation())
 		{
 			LoseGame();
@@ -135,11 +125,15 @@ void ADefaultBlock::Tick(float DeltaSeconds)
 	}
 }
 
+//////////////////////////////////////////////////////////////////////////////////////
+//Set the neighbouring blocks
+//////////////////////////////////////////////////////////////////////////////////////
 void ADefaultBlock::SetNeighbours()
 {
 	//get all actors type DefaultBlock that collide
 	BaseCollisionComponent->GetOverlappingActors(CollectedBlocks, ADefaultBlock::StaticClass());
 
+	//Loop through all the colliding blocks and set them as the correct neighbours
 	for (int32 i = 0; i < CollectedBlocks.Num(); i++)
 	{
 		//Cast to DefaultBlock
@@ -149,20 +143,16 @@ void ADefaultBlock::SetNeighbours()
 		{
 		
 		//Get positions to compare
-		FVector tilePos;//= CollectedTiles[i]->GetActorLocation();
+		FVector tilePos;
 		FVector tileBounds;
 		tile->GetActorBounds(false, tilePos, tileBounds);
 
-		FVector thisPos; //= this->GetActorLocation();
+		FVector thisPos; 
 		FVector thisBounds;
 		this->GetActorBounds(false, thisPos, thisBounds);
 
-		//debug
-		//FString TheFloatStr = FString::SanitizeFloat(tilePos.X);
-		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, *TheFloatStr);
 
 		//set as neighbours depending on position compared to This
-
 		if (tilePos.X == thisPos.X)
 		{
 			if (tilePos.Y>thisPos.Y)
@@ -182,16 +172,14 @@ void ADefaultBlock::SetNeighbours()
 	}
 }
 
+//////////////////////////////////////////////////////////////////////////////////////
+//Check if this block is isolated
+//////////////////////////////////////////////////////////////////////////////////////
 bool ADefaultBlock::CheckIsolation()
 {
 	if (this->GetBlockSouth() == NULL && this->GetBlockNorth() == NULL && this->GetBlockEast() == NULL && this->GetBlockWest() == NULL && this->bIsActive && OwningGrid->IsCompleted()==true)
 	{
 		//tile has no neighbours
-		//ISolation: 
-
-		/*FString TheFloatStr = FString::SanitizeFloat(this->GetActorLocation().X);
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, *TheFloatStr);*/
-
 		return true;
 
 	}
@@ -199,18 +187,21 @@ bool ADefaultBlock::CheckIsolation()
 
 }
 
+//////////////////////////////////////////////////////////////////////////////////////
+//Methods allowing to win or lose the game
+//////////////////////////////////////////////////////////////////////////////////////
 void ADefaultBlock::WinGame()
 {
+	//get the current GameMode & change the play state
 	AGlowBugGameMode* gm = (AGlowBugGameMode*)GetWorld()->GetAuthGameMode();
 	gm->SetCurrentState(EGlowBugPlayState::EGameWon);
 
-	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, "WIN!");
 }
 
 void ADefaultBlock::LoseGame()
 {
+	//get the current GameMode & change the play state
 	AGlowBugGameMode* gm = (AGlowBugGameMode*)GetWorld()->GetAuthGameMode();
 	gm->SetCurrentState(EGlowBugPlayState::EGameOver);
 
-	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, "LOST!");
 }

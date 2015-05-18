@@ -1,4 +1,11 @@
-// Copyright 1998-2014 Epic Games, Inc. All Rights Reserved.
+/**
+Game Development Project
+GlowBugCharacter.h
+Purpose: Header file for GlowBugCharacter.cpp
+
+@author Sarah Bulk
+*/
+
 #pragma once
 #include "GameFramework/Character.h"
 #include "DefaultBlock.h"
@@ -6,7 +13,9 @@
 #include "GlowBugCharacter.generated.h"
 
 
-//enum to store the current movement
+//////////////////////////////////////////////////////////////////////////////////////
+//enum to store the current direction of the character movement
+//////////////////////////////////////////////////////////////////////////////////////
 enum class ECharacterMovement : short
 {
 	EForward,
@@ -16,18 +25,24 @@ enum class ECharacterMovement : short
 	ENone
 };
 
-UCLASS(config=Game)
+
+//////////////////////////////////////////////////////////////////////////////////////
+//Default Character class declarations
+//////////////////////////////////////////////////////////////////////////////////////
+UCLASS(config = Game)
 class AGlowBugCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
 public:
+	//constructor
 	AGlowBugCharacter(const FObjectInitializer& ObjectInitializer);
 
 
 
 protected:
 
+	//current movement direction
 	ECharacterMovement currentMovement;
 
 	//whether or not the character can move in different directions at this point in time
@@ -42,10 +57,7 @@ protected:
 	/** Called for side to side input */
 	void MoveRight(float Value);
 
-	/**
-	* Called via input to turn at a given rate.
-	* @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
-	*/
+	//methods handling the movement in different directions
 	void OnStepNorth();
 	void OnStepSouth();
 	void OnStepEast();
@@ -56,17 +68,19 @@ protected:
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
-	// End of APawn interface
 
 public:
 
-	
+
 	//Array of Actors the Character is currently colliding with
 	TArray<AActor*> CollectedActors;
 
+	//Tick is called on every update
 	virtual void Tick(float DeltaSeconds) OVERRIDE;
+
+	//Checks for collision
 	void StepOff();
-	
+
 
 };
 
