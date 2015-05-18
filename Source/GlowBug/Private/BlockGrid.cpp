@@ -28,6 +28,8 @@ ABlockGrid::ABlockGrid(const FObjectInitializer& ObjectInitializer)
 	steps[2] = 1;
 	steps[3] = 1;
 
+	
+
 }
 
 void ABlockGrid::BeginPlay()
@@ -48,81 +50,85 @@ void ABlockGrid::BeginPlay()
 	//	msg="";
 	//}
 
+	levelGenerator = GetWorld()->SpawnActor<AGeneration>(levelGeneratorBP, FVector(0.f, 0.f, 0.f), FRotator(0, 0, 0));
 	GetNewLevel();
 
 }
 
 void ABlockGrid::GetNewLevel()
 {
-	srand(static_cast <unsigned> (time(0)));
+	//srand(static_cast <unsigned> (time(0)));
 
-	steps[0] = 1;
-	steps[1] = 1;
-	steps[2] = 1;
-	steps[3] = 1;
+	//steps[0] = 1;
+	//steps[1] = 1;
+	//steps[2] = 1;
+	//steps[3] = 1;
 
-	countBlocks = 0;
-	maxY = 0;
-	minY = 10000;
-	maxX = 0;
-	minX = 10000;
+	//countBlocks = 0;
+	//maxY = 0;
+	//minY = 10000;
+	//maxX = 0;
+	//minX = 10000;
 
-	//Clear the grid to allow for new generation
-	for (int i = 0; i < Size; i++)
-	{
-		for (int j = 0; j < Size; j++)
-		{
-			grid[i][j] = false;
-		}
-	}
+	////Clear the grid to allow for new generation
+	//for (int i = 0; i < Size; i++)
+	//{
+	//	for (int j = 0; j < Size; j++)
+	//	{
+	//		grid[i][j] = false;
+	//	}
+	//}
 
 
-	for (TActorIterator<ADefaultBlock> ActorItr(GetWorld()); ActorItr; ++ActorItr)
-	{
-		ActorItr->Destroy();
-	}
+	//for (TActorIterator<ADefaultBlock> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+	//{
+	//	ActorItr->Destroy();
+	//}
 
-	for (TActorIterator<AExitBlock> ActorItr(GetWorld()); ActorItr; ++ActorItr)
-	{
-		ActorItr->Destroy();
-	}
+	//for (TActorIterator<AExitBlock> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+	//{
+	//	ActorItr->Destroy();
+	//}
 
-	GenerateLevel(80);
+	//GenerateLevel(80);
 
-	SpawnLevel(grid);
+	//SpawnLevel(grid);
+
+	SpawnLevel(levelGenerator->GetNewLevel(80));
 
 
 }
 
 void ABlockGrid::GetOldLevel()
 {
-	steps[0] = 1;
-	steps[1] = 1;
-	steps[2] = 1;
-	steps[3] = 1;
+	//steps[0] = 1;
+	//steps[1] = 1;
+	//steps[2] = 1;
+	//steps[3] = 1;
 
-	countBlocks = 0;
-	maxY = 0;
-	minY = 10000;
-	maxX = 0;
-	minX = 10000;
+	//countBlocks = 0;
+	//maxY = 0;
+	//minY = 10000;
+	//maxX = 0;
+	//minX = 10000;
 
-	for (TActorIterator<ADefaultBlock> ActorItr(GetWorld()); ActorItr; ++ActorItr)
-	{
-		ActorItr->Destroy();
-		//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Yellow, TEXT("Block Destroyed"));
-	}
+	//for (TActorIterator<ADefaultBlock> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+	//{
+	//	ActorItr->Destroy();
+	//	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Yellow, TEXT("Block Destroyed"));
+	//}
 
-	for (TActorIterator<AExitBlock> ActorItr(GetWorld()); ActorItr; ++ActorItr)
-	{
-		ActorItr->Destroy();
-		//GEngine->AddOnScreenDebugMessage(-1, 100.f, FColor::Yellow, TEXT("Exit Destroyed"));
-	}
+	//for (TActorIterator<AExitBlock> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+	//{
+	//	ActorItr->Destroy();
+	//	//GEngine->AddOnScreenDebugMessage(-1, 100.f, FColor::Yellow, TEXT("Exit Destroyed"));
+	//}
 
-	AGlowBugGameMode* gm = (AGlowBugGameMode*)GetWorld()->GetAuthGameMode();
-	gm->SetCurrentState(EGlowBugPlayState::EPlaying);
+	//AGlowBugGameMode* gm = (AGlowBugGameMode*)GetWorld()->GetAuthGameMode();
+	//gm->SetCurrentState(EGlowBugPlayState::EPlaying);
 
-	SpawnLevel(grid);
+	//SpawnLevel(grid);
+	SpawnLevel(levelGenerator->GetOldLevel());
 }
 
 void ABlockGrid::GenerateLevel(int maxCount)
@@ -285,6 +291,7 @@ vector<Coordinate> ABlockGrid::findFreeSpots(Coordinate position, bool grid[100]
 
 void ABlockGrid::SpawnLevel(bool grid[100][100])
 {
+	countBlocks = 0;
 
 	// LOOP THROUGH FIELD[][] TO SPAWN BLOCKS FOR EVERY ELEMENT == TRUE
 	for (int i = 0; i<Size; i++)
@@ -353,14 +360,54 @@ void ABlockGrid::SpawnLevel(bool grid[100][100])
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TheFloatStr);*/
 }
 
+void ABlockGrid::SpawnLevel(vector<Coordinate> coords)
+{
+	countBlocks = 0;
+	int s = coords.size();
+
+	for (int i = 0; i < s - 1; i++)
+	{
+		//set height of level
+		if (coords[i].y>maxY)
+			maxY = coords[i].y;
+		if (coords[i].y < minY)
+			minY = coords[i].y;
+
+		//set width of level
+		if (coords[i].x>maxX)
+			maxX = coords[i].x;
+		if (coords[i].x < minX)
+			minX = coords[i].x;
+
+
+		newBlock = GetWorld()->SpawnActor<ADefaultBlock>(newBlockBP, FVector(coords[i].x, coords[i].y,0.f), FRotator(0, 0, 0));
+		if (newBlock != NULL)
+		{
+			newBlock->OwningGrid = this;
+			countBlocks++;
+		}
+	}
+
+	exitBlock = GetWorld()->SpawnActor<AExitBlock>(exitBlockBP, FVector(coords[s-1].x, coords[s-1].y, 0.f), FRotator(0, 0, 0));
+	if (exit != NULL)
+	{
+		exitBlock->OwningGrid = this;
+	}
+
+	SetIsCompleted(true);
+
+	for (TActorIterator<ADefaultBlock> BlockItr(GetWorld()); BlockItr; ++BlockItr)
+	{
+		BlockItr->SetNeighbours();
+	}
+}
+
 
 float ABlockGrid::GetMidY()
 {
-	//return minY+(maxY-minY) + 500;
 	return maxY;
 }
 float ABlockGrid::GetMidX()
 {
-	//return minY+(maxY-minY) + 500;
 	return minX;
 }

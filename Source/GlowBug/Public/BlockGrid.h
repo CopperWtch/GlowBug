@@ -8,6 +8,7 @@
 #include "DefaultBlock.h"
 #include "ExitBlock.h"
 #include "GlowBugGameMode.h"
+#include "Generation.h"
 #include "BlockGrid.generated.h"
 
 using namespace std;
@@ -16,11 +17,7 @@ using namespace std;
  * Class to spawn the blocks
  */
 
-struct Coordinate
-{
-	int x;
-	int y;
-};
+
 
 UCLASS(minimalapi)
 //GLOWBUG_API
@@ -45,12 +42,16 @@ private:
 
 	ADefaultBlock* newBlock;
 	ADefaultBlock* exitBlock;
+	AGeneration* levelGenerator;
 	
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = BPClasses)
 		UClass* newBlockBP;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = BPClasses)
 		UClass* exitBlockBP;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = BPClasses)
+		UClass* levelGeneratorBP;
+
 
 	ABlockGrid(const FObjectInitializer& ObjectInitializer);
 
@@ -92,7 +93,8 @@ public:
 	Coordinate GetNextPosition(vector<Coordinate> freeSpots, Coordinate currPos, int steps[4]);
 	void GenerateLevel(int maxCount);
 	void SpawnLevel(bool grid[100][100]);
-	
+	void SpawnLevel(vector<Coordinate> coords);
+
 	vector<Coordinate> findFreeSpots(Coordinate position, bool grid[100][100]);
 	Coordinate exitPosition;
 

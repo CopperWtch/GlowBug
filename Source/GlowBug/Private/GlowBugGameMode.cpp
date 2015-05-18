@@ -45,21 +45,7 @@ void AGlowBugGameMode::HandleNewState(EGlowBugPlayState NewState)
 	switch (NewState)
 	{
 	case EGlowBugPlayState::EPlaying:
-
-		/*if (!camera)
-		camera = GetWorld()->SpawnActor<AActor>(FVector(2500,3500,500), FRotator(0, 0, 0));*/
-		
-		//if (camera && GEngine)
-		//{
-
-		//		//cam = GEngine->GetFirstLocalPlayerController(GetWorld())->PlayerCameraManager;
-		//	GEngine->GetFirstLocalPlayerController(GetWorld())->PlayerCameraManager->SetViewTarget(this);
-
-		//}
-
-			
-
-			
+	
 		break;
 	case EGlowBugPlayState::EGameOver:
 		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, "Game Over");
@@ -71,7 +57,6 @@ void AGlowBugGameMode::HandleNewState(EGlowBugPlayState NewState)
 		if (menuC && menuBP && GetWorld())
 		menuC->ShowGameOver();
 
-		//ShowGameOver();
 		break;
 	case EGlowBugPlayState::EGameWon:
 		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, "Game Won");

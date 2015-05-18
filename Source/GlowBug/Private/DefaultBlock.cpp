@@ -89,9 +89,6 @@ void ADefaultBlock::OnSteppedOff_Implementation()
 		GetBlockSouth()->SetBlockNorth(NULL);
 	}
 
-
-	//To Debug we print a log on the screen
-	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, "Tile Destroyed!");
 }
 
 void ADefaultBlock::CheckCollision()

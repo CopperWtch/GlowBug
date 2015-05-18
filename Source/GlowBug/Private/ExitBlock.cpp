@@ -23,7 +23,8 @@ void AExitBlock::OnSteppedOn_Implementation()
 
 	//There is at least 1 Block remaining in the level. 
 	//The Player loses the game
-	if (OwningGrid->GetCountBlocks() > 1)
+	int cBlocks = OwningGrid->GetCountBlocks();
+	if (cBlocks> 1)
 	{
 		this->LoseGame();
 	}
